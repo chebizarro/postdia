@@ -1,6 +1,6 @@
 #!/bin/bash
 #autor:		Chris Daley <chebizarro@gmail.com>
-#descripcion:	This is the install script for the PostDia script
+#description:	This is the install script for the PostDia script
 #
 #      :$$$$$I: . +$$$$$$$$$77$$$+       
 #    $7 .      :$I .     ,$$..  . I$.    
@@ -40,13 +40,10 @@ plugins=(postgres)
 for plugin in ${plugins[@]}
 do
 	echo "compiling and copying plugin " $plugin
-	#chmod 644 $plugin.py
 	chmod 644 ./src/plugins/$plugin.py
-	#gene new 
 	rm -f /usr/share/dia/python/$plugin.py /usr/share/dia/python/$plugin.py
 	cp ./src/plugins/$plugin.py /usr/share/dia/python/$plugin.py
 	python -m compileall /usr/share/dia/python/$plugin.py
-	#permisos adecuados
 	chmod 644 /usr/share/dia/python/$plugin.py*
 done;
 
