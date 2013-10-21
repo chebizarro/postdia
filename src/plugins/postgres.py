@@ -56,13 +56,14 @@ class DiaSql :
 	def __init__(self, data) :
 		self.data = data
 		self.layer = data.active_layer
-		self.SQL = "--\n-- PostgreSQL database dump\n--\n\n\n"
+		self.SQL = "--\n-- PostgreSQL database dump\n--\n-- Created by postdia PostgreSQL plugin\n--\n-- https://github.com/chebizarro/postdia\n--\n\n"
 		self.SQL += "CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;\n\n"
 
 	def generateSQL(self) :
 		TSQL = ""
 		SSQL = ""
 		CSQL = ""
+		CMSQL = ""
 		
 		for obj in self.layer.objects :
 			if str(obj.type) == "UML - Class" :
@@ -71,8 +72,10 @@ class DiaSql :
 				SSQL += self.generateSequence(obj)
 			elif str(obj.type) == "UML - Constraint" :
 				CSQL += self.generateConstraint(obj)
+			elif str(obj.type) == "UML - Component" :
+				CMSQL += self.generateData(obj) 
 				
-		self.SQL += SSQL + TSQL + CSQL
+		self.SQL += SSQL + TSQL + CSQL + CMSQL
 
 	def generateTable(self, obj) :
 		noprops = len(obj.properties.get("attributes").value)
@@ -147,6 +150,17 @@ class DiaSql :
 				break
 			idx += 1		
 		return idxname
+	
+	def generateData(self, obj) :
+		data = obj.properties["text"].value.text
+		values = data.split("\n")
+		tablename = obj.properties["stereotype"].value
+		sql = "\n"
+		for val in values :
+			sql += "INSERT INTO " + tablename + " VALUES (" + val + ");\n"
+		
+		return sql
+			
 	
 	def printSQL(self) :
 		print self.SQL
